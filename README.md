@@ -2,7 +2,8 @@
 
 Meals App Flutter Learn
 
-Learning navigation on multiple screen. [Course source](https://www.udemy.com/user/academind/).
+Learning navigating and passing data on multiple screen.
+[Course source](https://www.udemy.com/user/academind/).
 
 * push and pop screen widget into a screen stack
 * Navigator.push
@@ -12,3 +13,11 @@ Learning navigation on multiple screen. [Course source](https://www.udemy.com/us
 * Positioned widget to coordinate a widget inside a Stack
 * FadeInImage
 * transparent_image dependency to add default image
+* passing data from Navigator.pop to Navigator.push
+* WillPopScope to manipulate pop behaviour, commonly used to pass data to previous screen
+* Navigator.pushReplacement to replace screen on screen's stack instead push/pop
+* Drawer widget to create a side bar
+* BottomNavigationBar to see navigation on bottom
+* override initState function and use widget variable to access a field in StatefulWidget 
+* SwitchListTile to create checked widget
+* AppBar actions, to add a button actions in app bar

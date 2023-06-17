@@ -4,17 +4,26 @@ import 'package:meals_app/screens/meal_detail_screen.dart';
 import 'package:meals_app/widgets/meal_item.dart';
 
 class MealsScreen extends StatelessWidget {
-  final String title;
+  final String? title;
   final List<Meal> meals;
+  final void Function(Meal meal) onToggleFavourite;
 
-  const MealsScreen({super.key, required this.title, required this.meals});
+  const MealsScreen({super.key, this.title, required this.meals, required this.onToggleFavourite});
 
   @override
   Widget build(BuildContext context) {
     Widget content = meals.isNotEmpty ? _showMeals() : _showNoMeals(context);
 
+    // Should go to this path whenever bottom tab navigator tapped
+    // (see MealsScreen constructor in tabs screen)
+    if (title == null) {
+      return content;
+    }
+
+    // Should go to this path whenever categories tapped
+    // (see see MealsScreen constructor in categories screen)
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(title: Text(title!)),
       body: content,
     );
   }
@@ -22,7 +31,7 @@ class MealsScreen extends StatelessWidget {
   _selectMealDetail(BuildContext context, Meal meal) {
     Navigator.of(context).push(MaterialPageRoute(
       builder: (ctx) {
-        return MealDetailScreen(meal: meal);
+        return MealDetailScreen(meal: meal, onToggleFavourite: onToggleFavourite,);
       },
     ));
   }
