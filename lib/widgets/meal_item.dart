@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:meals_app/models/meal.dart';
+import 'package:meals_app/widgets/meal_item_trait.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class MealItem extends StatelessWidget {
   final Meal meal;
+  final void Function() onSelectMealDetail;
 
-  const MealItem({super.key, required this.meal});
+  const MealItem({super.key, required this.meal, required this.onSelectMealDetail});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +20,7 @@ class MealItem extends StatelessWidget {
       clipBehavior: Clip.hardEdge,
       elevation: 2,
       child: InkWell(
-        onTap: () {},
+        onTap: onSelectMealDetail,
         // Stack is like html z-axis, the widget position can be in behind or in front of other widgets.
         child: Stack(
           children: [
@@ -53,8 +55,23 @@ class MealItem extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    const Row(children: [
-                      Text("test"),
+                    // SIZE CONSTRAINT EXPLAIN
+                    // This Row and the Row inside MealItemTrait should be got infinite constraint error.
+                    // However, since this Row ancestor is used Positioned widget
+                    // which initiate the fixed horizontal position on left and right.
+                    // As the result, this Row would not got infinite constraint error.
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      MealItemTrait(
+                          icon: Icons.schedule,
+                          label: "${meal.duration} min"),
+                      const SizedBox(width: 12),
+                      MealItemTrait(
+                          icon: Icons.work,
+                          label: meal.complexity.capitalize),
+                      const SizedBox(width: 12),
+                      MealItemTrait(
+                          icon: Icons.attach_money,
+                          label: meal.affordability.capitalize),
                     ]),
                   ],
                 ),
