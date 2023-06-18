@@ -1,55 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:meals_app/data/dummy_data.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meals_app/enums/filter_map.dart';
-import 'package:meals_app/models/meal.dart';
+import 'package:meals_app/providers/favourites_provider.dart';
+import 'package:meals_app/providers/filters_provider.dart';
+import 'package:meals_app/providers/meals_provider.dart';
 import 'package:meals_app/screens/categories_screen.dart';
 import 'package:meals_app/screens/filters_screen.dart';
 import 'package:meals_app/screens/meals_screen.dart';
 import 'package:meals_app/widgets/main_drawer.dart';
 
-const kInitiateFilters = {
-  FilterMapKey.includeGlutenFree: false,
-  FilterMapKey.includeLactoseFree: false,
-  FilterMapKey.includeVegetarian: false,
-  FilterMapKey.includeVegan: false,
-};
-
-class TabsScreen extends StatefulWidget {
+// to use provider, we have to change statefulWidget to ConsumerStatefulWidget
+class TabsScreen extends ConsumerStatefulWidget {
   const TabsScreen({super.key});
 
   @override
-  State<TabsScreen> createState() {
-    return TabsScreenState();
+  ConsumerState<TabsScreen> createState() {
+    return _TabsScreenState();
   }
 
 }
 
-class TabsScreenState extends State<TabsScreen> {
+// to use provider, we have to change State to Consumer State
+class _TabsScreenState extends ConsumerState<TabsScreen> {
   int _selectedIndexPage = 0;
-  final List<Meal> _favouriteMeals = [];
-  Map<FilterMapKey, bool> _checkedFilters = kInitiateFilters;
-
-  void _showInfoMessage (String message) {
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
-  }
-
-  void _toggleMealFavourites(Meal meal) {
-    var isFavouriteMeal = _favouriteMeals.contains(meal);
-
-    if (isFavouriteMeal) {
-      setState(() {
-        _favouriteMeals.remove(meal);
-      });
-      _showInfoMessage("Removed meal from favourites");
-    } else {
-      setState(() {
-        _favouriteMeals.add(meal);
-      });
-      _showInfoMessage("Added meal to favorites");
-    }
-  }
 
   void _selectPage(int index) {
     setState(() {
@@ -65,41 +38,41 @@ class TabsScreenState extends State<TabsScreen> {
       // Navigator.of(context).pushReplacement(
       //     MaterialPageRoute(builder: (ctx) => const FiltersScreen()));
 
-      var filterResults = await Navigator.of(context).push<Map<FilterMapKey, bool>>(
-          MaterialPageRoute(builder: (ctx) => FiltersScreen(currentFilter: _checkedFilters,)));
-
-      setState(() {
-        _checkedFilters = filterResults ?? kInitiateFilters;
-      });
+      // since we used Provider, then no need to get data after pop a screen
+      Navigator.of(context).push(
+          MaterialPageRoute(builder: (ctx) => const FiltersScreen()));
 
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    var filteredMeals = dummyMeals.where((meal) {
+    var meals = ref.watch(mealProvider);
+    var checkedFilters = ref.watch(filtersProvider);
+    var filteredMeals = meals.where((meal) {
       // if the meal is not gluten free then should not include immediately
-      if (_checkedFilters[FilterMapKey.includeGlutenFree]! && !meal.isGlutenFree) {
+      if (checkedFilters[FilterMapKey.includeGlutenFree]! && !meal.isGlutenFree) {
         return false; // no include
       }
-      if (_checkedFilters[FilterMapKey.includeLactoseFree]! && !meal.isLactoseFree) {
+      if (checkedFilters[FilterMapKey.includeLactoseFree]! && !meal.isLactoseFree) {
         return false;
       }
-      if (_checkedFilters[FilterMapKey.includeVegetarian]! && !meal.isVegetarian) {
+      if (checkedFilters[FilterMapKey.includeVegetarian]! && !meal.isVegetarian) {
         return false;
       }
-      if (_checkedFilters[FilterMapKey.includeVegan]! && !meal.isVegan) {
+      if (checkedFilters[FilterMapKey.includeVegan]! && !meal.isVegan) {
         return false;
       }
 
       return true; // include
     }).toList();
 
-    Widget activePage = CategoriesScreen(onToggleFavourite: _toggleMealFavourites, meals: filteredMeals);
+    Widget activePage = CategoriesScreen(meals: filteredMeals);
     var activePageTitle = "Categories";
 
     if (_selectedIndexPage == 1) {
-      activePage = MealsScreen(meals: _favouriteMeals, onToggleFavourite: _toggleMealFavourites,);
+      var favouriteMeals = ref.watch(favouritesMealsProvider);
+      activePage = MealsScreen(meals: favouriteMeals);
       activePageTitle = "Favourites";
     }
 

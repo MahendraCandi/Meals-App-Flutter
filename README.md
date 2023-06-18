@@ -21,3 +21,8 @@ Learning navigating and passing data on multiple screen.
 * override initState function and use widget variable to access a field in StatefulWidget 
 * SwitchListTile to create checked widget
 * AppBar actions, to add a button actions in app bar
+* use Provider, to pass state of data to another screen without using Navigator.pop
+* StateNotifier, StateNotifierProvider, ConsumerWidget, ConsumerStatefulWidget, ConsumerState
+* ref.read() to get data from provider once. Commonly used in initState or onTap
+* ref.watch() to get data from provider. Should be fetch whenever the screen is change
+* 

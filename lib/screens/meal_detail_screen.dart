@@ -1,19 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meals_app/models/meal.dart';
+import 'package:meals_app/providers/favourites_provider.dart';
 
-class MealDetailScreen extends StatelessWidget {
+// to use Provider, change StatelessWidget into ConsumerWidget
+class MealDetailScreen extends ConsumerWidget {
   final Meal meal;
-  final void Function(Meal meal) onToggleFavourite;
 
-  const MealDetailScreen({super.key, required this.meal, required this.onToggleFavourite});
+  const MealDetailScreen({super.key, required this.meal,});
 
+  // ConsumerWidget require WidgetRef in build function
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         title: Text(meal.title),
         actions: [
-          IconButton(onPressed: () => onToggleFavourite(meal), icon: const Icon(Icons.star))
+          IconButton(
+              onPressed: () {
+                // ref.read -> to read provider once
+                // use this instead of watch, because we only need to call the function
+                // not require to consume the data
+                // notifier in favouritesMealsProvider.notifier will call FavouritesProviderNotifier
+                var isAdded = ref.read(favouritesMealsProvider.notifier)
+                    .toggleMealFavourites(meal);
+
+                _showInfoMessage(context,
+                    isAdded ? "Added as favourite" : "Removed favourite");
+              },
+              icon: const Icon(Icons.star))
         ],
       ),
       body: SingleChildScrollView(
@@ -79,6 +94,12 @@ class MealDetailScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _showInfoMessage(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
 }

@@ -6,10 +6,9 @@ import 'package:meals_app/screens/meals_screen.dart';
 import 'package:meals_app/widgets/category_item.dart';
 
 class CategoriesScreen extends StatelessWidget {
-  final void Function(Meal meal) onToggleFavourite;
   final List<Meal> meals;
 
-  const CategoriesScreen({super.key, required this.onToggleFavourite, required this.meals});
+  const CategoriesScreen({super.key, required this.meals});
 
   void _selectCategory(BuildContext context, Category category) {
     // navigator.push is to insert a new screen into screen stack.
@@ -22,7 +21,6 @@ class CategoriesScreen extends StatelessWidget {
       builder: (ctx) => MealsScreen(
         title: category.title,
         meals: filteredByCategoriesMeals,
-        onToggleFavourite: onToggleFavourite,
       ),
     ));
   }

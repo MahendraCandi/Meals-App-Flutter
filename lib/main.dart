@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:meals_app/screens/tabs_screen.dart';
 
@@ -12,7 +13,13 @@ final themeData = ThemeData(
 );
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    // require to wrap our widget (that need provider) with ProviderScope
+    // using ProviderScope in Widget, make it visible to all widgets in the app
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

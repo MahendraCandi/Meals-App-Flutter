@@ -1,17 +1,18 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meals_app/enums/filter_map.dart';
+import 'package:meals_app/providers/filters_provider.dart';
 
-class FiltersScreen extends StatefulWidget {
-  final Map<FilterMapKey, bool> currentFilter;
+class FiltersScreen extends ConsumerStatefulWidget {
 
-  const FiltersScreen({super.key, required this.currentFilter});
+  const FiltersScreen({super.key,});
 
   @override
-  State<FiltersScreen> createState() => _FiltersScreenState();
+  ConsumerState<FiltersScreen> createState() => _FiltersScreenState();
 }
 
-class _FiltersScreenState extends State<FiltersScreen> {
+class _FiltersScreenState extends ConsumerState<FiltersScreen> {
   var _glutenFreeSet = false;
   var _lactoseFreeSet = false;
   var _vegetarianSet = false;
@@ -21,10 +22,13 @@ class _FiltersScreenState extends State<FiltersScreen> {
   @override
   void initState() {
     super.initState();
-    _glutenFreeSet = widget.currentFilter[FilterMapKey.includeGlutenFree]!;
-    _lactoseFreeSet = widget.currentFilter[FilterMapKey.includeLactoseFree]!;
-    _vegetarianSet = widget.currentFilter[FilterMapKey.includeVegetarian]!;
-    _veganSet = widget.currentFilter[FilterMapKey.includeVegan]!;
+    // ref.read call the value once because it used in initState
+    Map<FilterMapKey, bool> filteredMeals = ref.read(filtersProvider);
+
+    _glutenFreeSet = filteredMeals[FilterMapKey.includeGlutenFree]!;
+    _lactoseFreeSet = filteredMeals[FilterMapKey.includeLactoseFree]!;
+    _vegetarianSet = filteredMeals[FilterMapKey.includeVegetarian]!;
+    _veganSet = filteredMeals[FilterMapKey.includeVegan]!;
   }
 
   @override
@@ -45,19 +49,33 @@ class _FiltersScreenState extends State<FiltersScreen> {
       // }),
       body: WillPopScope( // a utility widget commonly used to pass data whenever user leave screen
         onWillPop: () async { // using async because we don't know how long user will be on this screen until they back again to previous screen
-          // this will be executed when user tap back button.
-          // pop function can accept a result parameter, to pass the data whenever a screen is pop from screen's stack.
-          // the data will be passed to the previous screen which called this screen via Navigator.push
-          Navigator.of(context).pop({
+
+          // update logic
+          // since we using Provider, we can use it to pass data between screen
+          // and return true to pop out the screen
+          ref.read(filtersProvider.notifier).setFilters({
             FilterMapKey.includeGlutenFree: _glutenFreeSet,
             FilterMapKey.includeLactoseFree: _lactoseFreeSet,
             FilterMapKey.includeVegetarian: _vegetarianSet,
             FilterMapKey.includeVegan: _veganSet,
           });
+
+          return true;
+
+          // old logic
+          // this will be executed when user tap back button.
+          // pop function can accept a result parameter, to pass the data whenever a screen is pop from screen's stack.
+          // the data will be passed to the previous screen which called this screen via Navigator.push
+          // Navigator.of(context).pop({
+          //   FilterMapKey.includeGlutenFree: _glutenFreeSet,
+          //   FilterMapKey.includeLactoseFree: _lactoseFreeSet,
+          //   FilterMapKey.includeVegetarian: _vegetarianSet,
+          //   FilterMapKey.includeVegan: _veganSet,
+          // });
           // if true then will be back to previous screen
           // if false then no back to previous screen
           // however in above code, since we initiate a Navigator to back manually, then back to previous screen still be executed
-          return false;
+          // return false;
         },
         child: Column(
           children: [
