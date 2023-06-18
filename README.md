@@ -25,4 +25,4 @@ Learning navigating and passing data on multiple screen.
 * StateNotifier, StateNotifierProvider, ConsumerWidget, ConsumerStatefulWidget, ConsumerState
 * ref.read() to get data from provider once. Commonly used in initState or onTap
 * ref.watch() to get data from provider. Should be fetch whenever the screen is change
-* 
+* Providers that depends on another Providers
