@@ -31,17 +31,44 @@ class MealDetailScreen extends ConsumerWidget {
                 _showInfoMessage(context,
                     isAdded ? "Added as favourite" : "Removed favourite");
               },
-              icon: Icon(isFavourite ? Icons.star : Icons.star_border))
+
+            // implicit animation
+            // AnimatedSwitcher -> transition between two values
+            icon: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              transitionBuilder: (child, animation) {
+                return RotationTransition(
+                  // we can put animation param as default value from flutter
+                  // turns: animation,
+                  // or we can use one of Animatable object like Tween to override default value from flutter
+                  turns: Tween<double>(begin: 0.85, end: 1).animate(animation),
+                  child: child,
+                );
+              },
+              child: Icon(isFavourite ? Icons.star : Icons.star_border,
+                // the AnimationSwitcher couldn't detect the changed of icon because it still Icon widget
+                // therefor we need to detect changed value inside the Icon widget
+                // the key param can be used to detect the changed value
+                key: ValueKey(isFavourite),
+              ),
+            ),
+          ),
         ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Image(
-              image: NetworkImage(meal.imageUrl), // get image from url
-              fit: BoxFit.cover,
-              height: 300,
-              width: double.infinity, // to take all available width space
+            Hero( // to animate widgets across between screen (the target and the source)
+              // to identified which widget should be animated
+              // this widget will be animated as target (where it going)
+              // please check the source on lib/widgets/meal_item.dart:28
+              tag: meal.id,
+              child: Image(
+                image: NetworkImage(meal.imageUrl), // get image from url
+                fit: BoxFit.cover,
+                height: 300,
+                width: double.infinity, // to take all available width space
+              ),
             ),
             const SizedBox(height: 14),
             Text(

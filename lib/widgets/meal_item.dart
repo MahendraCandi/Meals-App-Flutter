@@ -25,12 +25,19 @@ class MealItem extends StatelessWidget {
         child: Stack(
           children: [
             // first widget will have position in very behind of another widget
-            FadeInImage(
-              placeholder: MemoryImage(kTransparentImage), // default image
-              image: NetworkImage(meal.imageUrl), // get image from url
-              fit: BoxFit.cover,
-              height: 200,
-              width: double.infinity,
+            Hero( // to animate widgets across between screen (the target and the source)
+              // to identified which widget should be animated
+              // this widget will be animated as source (where it coming)
+              // please check the target widget on lib/screens/meal_detail_screen.dart:61
+              tag: meal.id,
+              // widget to be animated
+              child: FadeInImage(
+                placeholder: MemoryImage(kTransparentImage), // default image
+                image: NetworkImage(meal.imageUrl), // get image from url
+                fit: BoxFit.cover,
+                height: 200,
+                width: double.infinity,
+              ),
             ),
             // by using positioned widget, we can set the position of Container
             Positioned(

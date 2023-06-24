@@ -24,5 +24,8 @@ Learning navigating and passing data on multiple screen.
 * use Provider, to pass state of data to another screen without using Navigator.pop
 * StateNotifier, StateNotifierProvider, ConsumerWidget, ConsumerStatefulWidget, ConsumerState
 * ref.read() to get data from provider once. Commonly used in initState or onTap
-* ref.watch() to get data from provider. Should be fetch whenever the screen is change
+* ref.watch() to get data from provider. Should be fetched whenever the screen is change
 * Providers that depends on another Providers
+* using AnimationController to create explicit animation
+* using Animated... (ex: AnimatedSwitcher) built in widget by flutter to create implicit animation
+* using Hero to create animation between widget
